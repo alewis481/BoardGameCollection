@@ -12,7 +12,7 @@
  * to implement a game of reversi. The member function play will 
  * set up a game automatically. 
  */
- */
+
 class Reversi : public BoardGame { 
  public:
   /** 

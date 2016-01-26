@@ -46,33 +46,16 @@ int Life::adjacentCells(Coordinate pos) {
   Coordinate bottom_left(pos.row + 1, pos.col - 1);
   Coordinate left(pos.row, pos.col - 1);
 
-  //each if statement checks if the adjacent coordinate is in bounds and whether
-  //  it is a living cell. If so, increment num_adjacent_cells variable
-  if(game_board_.isInBounds(top_left) &&
-     game_board_.getSymbol(top_left) == cell_symbol_) {++num_adjacent_cells;}
 
-  if(game_board_.isInBounds(top) &&
-     game_board_.getSymbol(top) == cell_symbol_) {++num_adjacent_cells;}
-
-  if(game_board_.isInBounds(top_right) &&
-     game_board_.getSymbol(top_right) == cell_symbol_) {++num_adjacent_cells;}
-
-  if(game_board_.isInBounds(right) &&
-     game_board_.getSymbol(right) == cell_symbol_) {++num_adjacent_cells;}
-
-  if(game_board_.isInBounds(bottom_right) &&
-     game_board_.getSymbol(bottom_right) ==cell_symbol_) {++num_adjacent_cells;}
-
-  if(game_board_.isInBounds(bottom) &&
-     game_board_.getSymbol(bottom) == cell_symbol_) {++num_adjacent_cells;}
-
-  if(game_board_.isInBounds(bottom_left) &&
-     game_board_.getSymbol(bottom_left) == cell_symbol_) {++num_adjacent_cells;}
-
-  if(game_board_.isInBounds(left) &&
-     game_board_.getSymbol(left) == cell_symbol_) {++num_adjacent_cells;}
-  
-
+  std::vector<Coordinate> adjacent_positions ={top_left, top, top_right,
+					       left,          right,
+					       bottom_left,bottom,bottom_right};
+  // checks if the adjacent coordinate is in bounds and whether it is
+  //a living cell. If so, increment num_adjacent_cells variable
+  for (Coordinate position : adjacent_positions) {
+    if(game_board_.isInBounds(position) &&
+       game_board_.getSymbol(position) == cell_symbol_) {++num_adjacent_cells;}
+  }
   return num_adjacent_cells;
 }
 
