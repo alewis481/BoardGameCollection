@@ -36,26 +36,20 @@ void Life::populateBoard() {
 int Life::adjacentCells(Coordinate pos) {
   //holds the number of living cells adjacent to pos 
   int num_adjacent_cells = 0;
-  //sets up coordinate variables to each entry in the board adjacent to pos
-  Coordinate top_left(pos.row - 1, pos.col - 1);
-  Coordinate top(pos.row - 1, pos.col);
-  Coordinate top_right(pos.row - 1, pos.col + 1);
-  Coordinate right(pos.row, pos.col + 1);
-  Coordinate bottom_right(pos.row + 1, pos.col + 1);
-  Coordinate bottom(pos.row + 1, pos.col);
-  Coordinate bottom_left(pos.row + 1, pos.col - 1);
-  Coordinate left(pos.row, pos.col - 1);
 
-
-  std::vector<Coordinate> adjacent_positions ={top_left, top, top_right,
-					       left,          right,
-					       bottom_left,bottom,bottom_right};
   // checks if the adjacent coordinate is in bounds and whether it is
   //a living cell. If so, increment num_adjacent_cells variable
-  for (Coordinate position : adjacent_positions) {
-    if(game_board_.isInBounds(position) &&
-       game_board_.getSymbol(position) == cell_symbol_) {++num_adjacent_cells;}
+  for (int dx = -1; dx <= 1; ++dx) {
+    for (int dy = -1; dy <= 1; ++dy) {
+      Coordinate adjacent {pos.row + dx, pos.col + dy};
+      if ((dx || dy) && game_board_.isInBounds(adjacent) &&
+	  game_board_.getSymbol(adjacent) == cell_symbol_)
+	{++num_adjacent_cells;}     
+    }
   }
+  
+  
+  
   return num_adjacent_cells;
 }
 

@@ -60,43 +60,19 @@ void Reversi::flipAdjacent(Coordinate pos, char symbol) {
   // return;
   // }
   
-  //consider replacing this with some check adjacent thing?
-  //maybe returns a vector of same symbol adjacent?
-  Coordinate top_left(pos.row - 1, pos.col - 1);
-  Coordinate top(pos.row - 1, pos.col);
-  Coordinate top_right(pos.row - 1, pos.col + 1);
-  Coordinate right(pos.row, pos.col + 1);
-  Coordinate bottom_right(pos.row + 1, pos.col + 1);
-  Coordinate bottom(pos.row + 1, pos.col);
-  Coordinate bottom_left(pos.row + 1, pos.col - 1);
-  Coordinate left(pos.row, pos.col - 1);
-  
-  using vectorOfTriples = std::vector<std::tuple<Coordinate, int, int>>;
-
-  //makes a vector storing each adjacent position relative to pos
-  //the second two ints are the direction of the position relative to pos
-  vectorOfTriples adjacent = {std::make_tuple(top_left , -1, -1),
-			      std::make_tuple(top, -1, 0),
-			      std::make_tuple(top_right , -1, 1),
-			      std::make_tuple(right, 0, 1),
-			      std::make_tuple(bottom_right, 1, 1),
-			      std::make_tuple(bottom, 1, 0),
-			      std::make_tuple(bottom_left , 1, -1),
-			      std::make_tuple(left, 0, -1) };
-  
-  
   //use flip to flip all necessary pieces
-  for(auto x : adjacent) {
-    //    coordinate     dx              dy           initially player
-    flip(std::get<0>(x), std::get<1>(x), std::get<2>(x), false, symbol);
+  for (int dx = -1; dx <= 1; ++dx) {
+    for (int dy = -1; dy <= 1; ++dy) {
+      if(dx || dy) {
+	flip(Coordinate(pos.row+dx, pos.col+dy), dx, dy, false, symbol);
       }
-  
-  
+    }
+  }
 }
 
-
+  
 bool Reversi::isDone() const {
-
+  
   int player1_available_moves = 0;
   int player2_available_moves = 0;
   //counts the number of moves possible for each player
@@ -110,10 +86,8 @@ bool Reversi::isDone() const {
   }
   //game is over if a player cannot make any moves
   //TODO: make sure this is correct gameplay
-  if(player1_available_moves == 0 || player2_available_moves == 0)
-    return true;
-  else
-    return false;
+  return player1_available_moves == 0 || player2_available_moves == 0;
+
 }
 
 //recursive function to determine whether path in some direction is valid
@@ -137,44 +111,19 @@ bool Reversi::isLegalMove(Coordinate pos, char sym) const {
   if(game_board_.isOccupied(pos))
     return false;
   
-  //consider replacing this with some check adjacent thing?
-  //maybe returns a vector of same symbol adjacent?
-  Coordinate top_left(pos.row - 1, pos.col - 1);
-  Coordinate top(pos.row - 1, pos.col);
-  Coordinate top_right(pos.row - 1, pos.col + 1);
-  Coordinate right(pos.row, pos.col + 1);
-  Coordinate bottom_right(pos.row + 1, pos.col + 1);
-  Coordinate bottom(pos.row + 1, pos.col);
-  Coordinate bottom_left(pos.row + 1, pos.col - 1);
-  Coordinate left(pos.row, pos.col - 1);
-
-  //used to define paths from position in each direction
-  //the second two ints specify direction 
-  using vectorOfTriples = std::vector<std::tuple<Coordinate, int, int>>;
-
-  //TODO: replace magic numbers
-  vectorOfTriples adjacent = {std::make_tuple(top_left , -1, -1),
-			      std::make_tuple(top, -1, 0),
-			      std::make_tuple(top_right , -1, 1),
-			      std::make_tuple(right, 0, 1),
-			      std::make_tuple(bottom_right, 1, 1),
-			      std::make_tuple(bottom, 1, 0),
-			      std::make_tuple(bottom_left , 1, -1),
-			      std::make_tuple(left, 0, -1) };
-  
-  for (auto x : adjacent) {
-    //if not out of bounds, not same symbol, not default symbol, and if
-    //path of opposite symbols leads to same symbol, return true
-    //TODO:typedef the std::gets to something more readable
-    if (game_board_.isInBounds(std::get<0>(x))
-	&& game_board_.getSymbol(std::get<0>(x))!=game_board_.getDefaultSymbol()
-	&& game_board_.getSymbol(std::get<0>(x)) != sym
-	&& isValidPath(std::get<0>(x),std::get<1>(x),std::get<2>(x),false,sym)){
-      return true;
+  //if not out of bounds, not same symbol, not default symbol, and if
+  //path of opposite symbols leads to same symbol, return true
+  for (int dx = -1; dx <= 1; ++dx) {
+    for (int dy = -1; dy <= 1; ++dy) {
+      Coordinate adjacent {pos.row + dx, pos.col + dy};
+      if ((dx || dy)
+	  && game_board_.isInBounds(adjacent)
+	  && game_board_.getSymbol(adjacent) != game_board_.getDefaultSymbol()
+	  && game_board_.getSymbol(adjacent) != sym
+	  && isValidPath(adjacent, dx, dy, false, sym)) {return true;}
     }
   }
   return false;
-  
 }
 
 void Reversi::results() const {
@@ -222,11 +171,8 @@ void Reversi::play() {
     }
     doMove(nextMove, player_list_[current_player].getSymbol());
     printBoard();
-
-    if(current_player == 0)
-      current_player = 1;
-    else
-      current_player = 0;
+    
+    current_player == 0 ? current_player = 1 : current_player = 0; 
   }
   results();
   
